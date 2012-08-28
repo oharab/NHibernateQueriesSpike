@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Domain" />
+    <Folder Include="Domain\Queries" />
     <Folder Include="Plumbing" />
     <Folder Include="Plumbing\NHibernate" />
     <Folder Include="Plumbing\WindsorInstallers" />

@@ -5,9 +5,11 @@
  * 
  *  */
 using System;
+using System.Linq;
 using Castle.Core.Logging;
 using console.Domain;
 using NHibernate;
+using NHibernate.Criterion;
 
 namespace console
 {
@@ -55,7 +57,7 @@ namespace console
 						Text=@"Nam ac enim sit amet nulla scelerisque cursus. Nulla eros diam, egestas venenatis ultricies at, iaculis eget neque. Aenean id faucibus dui. Fusce ac massa sed neque varius vulputate. Donec luctus mauris non massa blandit dignissim. Donec eu dignissim dui. Nullam non libero dolor. Aliquam mauris odio, aliquam eu faucibus eu, accumsan at felis. Ut tellus ipsum, convallis et sagittis non, pharetra vel ligula. ",
 						CreatedDate=DateTime.Today.AddDays(-3)
 					}
-				);				
+				);
 
 				session.Save(
 					new Blog{
@@ -71,8 +73,64 @@ namespace console
 						Text=@"nteger at sapien vel tellus scelerisque elementum. Nulla et justo id odio dapibus tincidunt. Etiam justo nisi, ornare quis lacinia sed, feugiat eu purus. Aliquam ullamcorper arcu sed massa volutpat a pulvinar tortor luctus. Nunc lacus ipsum, scelerisque eu sollicitudin nec, rutrum a nisl. Vestibulum lacus dui, feugiat id vehicula vel, volutpat non tortor. Maecenas luctus augue eu lacus ultrices iaculis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus lacinia blandit luctus. Phasellus convallis aliquet ipsum, ut pharetra nunc molestie non. Nulla pulvinar semper tortor, a tristique odio gravida eu. Phasellus egestas accumsan tempor.",
 						CreatedDate=DateTime.Today.AddDays(-1)
 					}
-				);				
+				);
 				tx.Commit();
+			}
+		}
+		
+		public void GetBlogByTitle(string blogTitle)
+		{
+			var b=session.QueryOver<Blog>()
+				.Where(c=>c.Title==blogTitle)
+				.SingleOrDefault();
+			logger.DebugFormat("{0}\n\tId:\t{1}\n\tTitle:\t{2}\n\tText:\t{3}",
+			                   blogTitle,b.Id,b.Title,b.Text);
+		}
+		
+		public void AddSomeCommentsTo(string blogTitle)
+		{
+			var b=session.QueryOver<Blog>()
+				.Where(c=>c.Title==blogTitle)
+				.SingleOrDefault();
+			
+			b.Comments.Add(new Comment{
+			               	Author="Author 1",
+			               	Text="Donec varius elementum lorem, in consectetur massa fermentum ut."
+			               });
+			b.Comments.Add(new Comment{
+			               	Author="Author 2",
+			               	Text="Nunc sed turpis at nunc interdum elementum id id libero."
+			               });
+			b.Comments.Add(new Comment{
+			               	Author="Author 3",
+			               	Text="Etiam molestie egestas iaculis. Integer pulvinar sollicitudin tempor."
+			               });
+			b.Comments.Add(new Comment{
+			               	Author="Author 4",
+			               	Text="Ut pellentesque dui eget ipsum facilisis vel eleifend nisi porttitor. Praesent fringilla elit at lectus egestas eu feugiat sem scelerisque. Curabitur ornare turpis vitae eros sagittis euismod. Integer pharetra nunc ipsum. Mauris eu accumsan quam. Maecenas convallis convallis orci. Morbi eu arcu posuere lorem aliquam pharetra eu in diam. Phasellus egestas porttitor risus et volutpat. Maecenas placerat urna quis sem elementum eu porta tortor egestas. Etiam tempus, magna quis consequat pharetra, augue dui suscipit diam, vel imperdiet ligula magna condimentum dui. Proin scelerisque est nisl, non elementum nibh. Integer semper condimentum felis sit amet dictum. Phasellus quis semper leo. Sed interdum ornare interdum. Integer diam mauris, euismod sit amet eleifend a, facilisis quis massa."
+			               });
+			
+			using(var tx=session.BeginTransaction()){
+				session.Save(b);
+				tx.Commit();
+			}
+		}
+		
+		public void CountAllComments()
+		{
+			var q=session.QueryOver<Blog>()
+				.SelectList(list=>list.Select(s=>s.Id)
+				            		  .Select(s=>s.Title)
+					            	  .SelectCount(s=>s.Comments)
+				           )
+				.List<object[]>()
+				.Select(properties => new {
+				        	Id = (Guid)properties[0],
+				        	Title = (string)properties[1],
+				        	Comments=(int)properties[2]
+				        });
+			foreach (var b in q) {
+				logger.DebugFormat("\tId:\t{0}\tTitle:\t{1}\tComments:\t{2}",b.Id,b.Title,b.Comments);
 			}
 		}
 	}

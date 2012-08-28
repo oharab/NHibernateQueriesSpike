@@ -28,7 +28,9 @@ namespace console
 			IMain app=container.Resolve<IMain>();
 			app.Begin();
 			app.AddSomeBlogs();
-			
+			app.GetBlogByTitle("Blog 3");
+			app.AddSomeCommentsTo("Blog 3");
+			app.CountAllComments();
 			Console.Write("Completed.");
 			
 			container.Dispose();

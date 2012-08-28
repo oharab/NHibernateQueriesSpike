@@ -15,5 +15,11 @@ namespace console
 	{
 		void Begin();
 		void AddSomeBlogs();
+		
+		void GetBlogByTitle(string blogTitle);
+		
+		void AddSomeCommentsTo(string blogTitle);
+		
+		void CountAllComments();
 	}
 }
