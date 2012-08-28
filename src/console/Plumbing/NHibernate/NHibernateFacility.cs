@@ -25,7 +25,7 @@ namespace console.Plumbing.NHibernate
 	/// </summary>
 	public class NHibernateFacility:AbstractFacility
 	{
-		const string DbFile=@"o:\721116\spikes\NHibernateQueries\nhq.db";
+		private string DbFile=System.IO.Path.GetFullPath(@"..\..\..\..\nhq.db");
 		
 		protected override void Init()
 		{
@@ -70,7 +70,7 @@ namespace console.Plumbing.NHibernate
 		}
 
 		// Updates the database schema if there are any changes to the model
-		private static void BuildSchema( Configuration cfg )
+		private void BuildSchema( Configuration cfg )
 		{
 			 if (File.Exists(DbFile))                
 			 	File.Delete(DbFile);

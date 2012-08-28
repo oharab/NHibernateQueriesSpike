@@ -8,8 +8,10 @@ using System;
 using System.Linq;
 using Castle.Core.Logging;
 using console.Domain;
+using log4net;
 using NHibernate;
 using NHibernate.Criterion;
+using NHibernate.Transform;
 
 namespace console
 {
@@ -18,21 +20,21 @@ namespace console
 	/// </summary>
 	public class Main:IMain
 	{
-		ILogger logger;
+		public ILogger Logger { get; set; }
 		ISession session;
-		public Main(ILogger logger,ISession session)
+		public Main(ISession session)
 		{
-			this.logger=logger;
+			this.Logger=NullLogger.Instance;
 			this.session=session;
 		}
 		
 		public void Begin(){
-			logger.Debug("Beginning");
+			Logger.Debug("Beginning");
 		}
 		
 		public void AddSomeBlogs()
 		{
-			logger.Debug("Adding some blogs");
+			Logger.Debug("Adding some blogs");
 			
 			using(var tx=session.BeginTransaction()){
 				session.Save(
@@ -83,7 +85,7 @@ namespace console
 			var b=session.QueryOver<Blog>()
 				.Where(c=>c.Title==blogTitle)
 				.SingleOrDefault();
-			logger.DebugFormat("{0}\n\tId:\t{1}\n\tTitle:\t{2}\n\tText:\t{3}",
+			Logger.DebugFormat("{0}\n\tId:\t{1}\n\tTitle:\t{2}\n\tText:\t{3}",
 			                   blogTitle,b.Id,b.Title,b.Text);
 		}
 		
@@ -118,19 +120,18 @@ namespace console
 		
 		public void CountAllComments()
 		{
-			var q=session.QueryOver<Blog>()
-				.SelectList(list=>list.Select(s=>s.Id)
-				            		  .Select(s=>s.Title)
-					            	  .SelectCount(s=>s.Comments)
-				           )
-				.List<object[]>()
-				.Select(properties => new {
-				        	Id = (Guid)properties[0],
-				        	Title = (string)properties[1],
-				        	Comments=(int)properties[2]
+			var l=session.QueryOver<Blog>()
+				.Left.JoinQueryOver<Comment>(b=>b.Comments)
+				.TransformUsing(new DistinctRootEntityResultTransformer())
+				.List<Blog>()
+				;
+			var q=l.Select(b => new {
+				        	Id = b.Id,
+				        	Title = b.Title,
+				        	Comments=b.Comments.Count
 				        });
 			foreach (var b in q) {
-				logger.DebugFormat("\tId:\t{0}\tTitle:\t{1}\tComments:\t{2}",b.Id,b.Title,b.Comments);
+				Logger.DebugFormat("\tId:\t{0}\tTitle:\t{1}\tComments:\t{2}",b.Id,b.Title,b.Comments);
 			}
 		}
 	}
