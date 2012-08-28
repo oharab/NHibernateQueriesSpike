@@ -17,19 +17,23 @@ namespace console
 		public static void Main(string[] args)
 		{
 			
-			Console.WriteLine("Loading container");
+			Console.WriteLine("Starting Main");
 			
 			container=new WindsorContainer();
+			
 			container.Install(
 				 FromAssembly.This()
 			);
 			
-			// TODO: Implement Functionality Here
+			IMain app=container.Resolve<IMain>();
+			app.Begin();
+			app.AddSomeBlogs();
 			
 			Console.Write("Completed.");
-			Console.ReadKey(true);
 			
 			container.Dispose();
+			Console.ReadKey(true);
 		}
+		
 	}
 }

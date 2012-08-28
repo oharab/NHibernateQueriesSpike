@@ -3,3 +3,4 @@ depends: openwrap anchored content
 depends: NHibernate
 depends: FluentNhibernate
 depends: castle.windsor-log4net
+depends: System.Data.SQlite.x86

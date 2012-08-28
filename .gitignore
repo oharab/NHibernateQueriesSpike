@@ -61,3 +61,4 @@ obj/
 # http://support.microsoft.com/kb/830611
 *.webinfo
 
+nhq.db

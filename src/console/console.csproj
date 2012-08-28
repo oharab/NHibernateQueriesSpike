@@ -45,11 +45,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\Blog.cs" />
+    <Compile Include="Domain\Comment.cs" />
+    <Compile Include="IMain.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="Plumbing\NHibernate\AutoMappingConfiguration.cs" />
+    <Compile Include="Plumbing\NHibernate\NHibernateFacility.cs" />
+    <Compile Include="Plumbing\WindsorInstallers\LoggingInstaller.cs" />
+    <Compile Include="Plumbing\WindsorInstallers\MainInstaller.cs" />
+    <Compile Include="Plumbing\WindsorInstallers\NHibernateInstaller.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Domain" />
+    <Folder Include="Plumbing" />
+    <Folder Include="Plumbing\NHibernate" />
+    <Folder Include="Plumbing\WindsorInstallers" />
   </ItemGroup>
   <Import Project="..\..\wraps\openwrap\build\OpenWrap.CSharp.targets" />
 </Project>
