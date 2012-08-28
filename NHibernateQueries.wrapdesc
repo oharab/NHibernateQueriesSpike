@@ -1,0 +1,5 @@
+﻿name: NHibernateQueries
+depends: openwrap anchored content
+depends: NHibernate
+depends: FluentNhibernate
+depends: castle.windsor-log4net
