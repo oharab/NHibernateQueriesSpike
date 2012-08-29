@@ -21,5 +21,6 @@ namespace console
 		void AddSomeCommentsTo(string blogTitle);
 		
 		void CountAllComments();
+		
 	}
 }

@@ -62,18 +62,19 @@ namespace console.Plumbing.NHibernate
 		protected virtual IPersistenceConfigurer SetupDatabase()
 		{
 			return SQLiteConfiguration.Standard
-				//.InMemory()
-				.ShowSql()
+				.InMemory()
+				//.ShowSql()
 				.UseOuterJoin()
-				.ConnectionString(string.Format("data source={0};version=3",DbFile))
+				//.ConnectionString(string.Format("data source={0};version=3",DbFile))
+				.ConnectionString("data source=Memory;")
 				.ShowSql();
 		}
 
 		// Updates the database schema if there are any changes to the model
 		private void BuildSchema( Configuration cfg )
 		{
-			 if (File.Exists(DbFile))                
-			 	File.Delete(DbFile);
+//			 if (File.Exists(DbFile))                
+//			 	File.Delete(DbFile);
 			new SchemaExport( cfg )
 				.Create(true,true);
 		}

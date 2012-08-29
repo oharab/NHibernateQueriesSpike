@@ -11,6 +11,7 @@ using console.Domain;
 using log4net;
 using NHibernate;
 using NHibernate.Criterion;
+using NHibernate.Linq;
 using NHibernate.Transform;
 
 namespace console
@@ -120,19 +121,19 @@ namespace console
 		
 		public void CountAllComments()
 		{
-			var l=session.QueryOver<Blog>()
+			var results=session.QueryOver<Blog>()
 				.Left.JoinQueryOver<Comment>(b=>b.Comments)
 				.TransformUsing(new DistinctRootEntityResultTransformer())
 				.List<Blog>()
-				;
-			var q=l.Select(b => new {
-				        	Id = b.Id,
-				        	Title = b.Title,
-				        	Comments=b.Comments.Count
-				        });
-			foreach (var b in q) {
+				.Select(b => new {
+			               	Id = b.Id,
+			               	Title = b.Title,
+			               	Comments=b.Comments.Count
+			               });
+			foreach (var b in results) {
 				Logger.DebugFormat("\tId:\t{0}\tTitle:\t{1}\tComments:\t{2}",b.Id,b.Title,b.Comments);
 			}
 		}
+		
 	}
 }
