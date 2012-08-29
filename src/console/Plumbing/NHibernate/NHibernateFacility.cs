@@ -63,11 +63,10 @@ namespace console.Plumbing.NHibernate
 		{
 			return SQLiteConfiguration.Standard
 				.InMemory()
-				//.ShowSql()
 				.UseOuterJoin()
 				//.ConnectionString(string.Format("data source={0};version=3",DbFile))
-				.ConnectionString("data source=Memory;")
-				.ShowSql();
+				.ConnectionString("Data Source=:memory:;Version=3;New=True;")
+				;
 		}
 
 		// Updates the database schema if there are any changes to the model

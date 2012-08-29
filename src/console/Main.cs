@@ -121,15 +121,21 @@ namespace console
 		
 		public void CountAllComments()
 		{
+			Comment comment=null;
 			var results=session.QueryOver<Blog>()
-				.Left.JoinQueryOver<Comment>(b=>b.Comments)
-				.TransformUsing(new DistinctRootEntityResultTransformer())
-				.List<Blog>()
+				.Left.JoinAlias(b=>b.Comments,()=>comment)
+				.SelectList(
+					list=>list
+					.SelectGroup(b=>b.Id)
+					.SelectGroup(b=>b.Title)
+					.SelectCount(b=>comment.Id)
+				)
+				.List<object[]>()
 				.Select(b => new {
-			               	Id = b.Id,
-			               	Title = b.Title,
-			               	Comments=b.Comments.Count
-			               });
+				        	Id = (Guid)b[0],
+				        	Title = (string)b[1],
+				        	Comments=(int)b[2]
+				        });
 			foreach (var b in results) {
 				Logger.DebugFormat("\tId:\t{0}\tTitle:\t{1}\tComments:\t{2}",b.Id,b.Title,b.Comments);
 			}
